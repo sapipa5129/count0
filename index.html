@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta Regresiva</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+
+        input[type="number"] {
+            width: 30%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Cuenta Regresiva</h1>
+        <div class="input-group">
+            <input type="number" id="hours" placeholder="Horas" min="0">
+            <input type="number" id="minutes" placeholder="Minutos" min="0">
+            <input type="number" id="seconds" placeholder="Segundos" min="0">
+        </div>
+        <button id="startBtn" onclick="startCountdown()">Iniciar</button>
+    </div>
+
+    <script>
+        function startCountdown() {
+            const hours = document.getElementById('hours').value || 0;
+            const minutes = document.getElementById('minutes').value || 0;
+            const seconds = document.getElementById('seconds').value || 0;
+
+            const url = `countdown.html?hours=${hours}&minutes=${minutes}&seconds=${seconds}`;
+            window.location.href = url;
+        }
+    </script>
+
+</body>
+</html>
