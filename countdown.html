@@ -1,82 +1,105 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuenta Regresiva en Progreso</title>
-       <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: green;
-             transition: background-color 1s ease;
-         }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuenta Regresiva en Progreso</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: green;
+      transition: background-color 1s ease;
+    }
 
-        #timer {
-            font-size: 2000%;
-            font-weight: bold;
-            color: black;
-         }
-    </style>
+    #timer {
+      font-size: 2000%;
+      font-weight: bold;
+      color: black;
+    }
+
+    #message {
+      font-size: 2rem;
+      margin-top: 20px;
+      color: black;
+    }
+  </style>
 </head>
 <body>
 
-    <div id="timer">00:00:00</div>
+  <div id="timer">00:00:00</div>
+  <div id="message"></div>
 
-     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        let hours = parseInt(urlParams.get('hours') || 0);
-        let minutes = parseInt(urlParams.get('minutes') || 0);
-        let seconds = parseInt(urlParams.get('seconds') || 0);
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    let hours = parseInt(urlParams.get('hours') || 0);
+    let minutes = parseInt(urlParams.get('minutes') || 0);
+    let seconds = parseInt(urlParams.get('seconds') || 0);
 
-        let totalSeconds = hours * 3600 + minutes * 60 + seconds;
+    let totalSeconds = hours * 3600 + minutes * 60 + seconds;
+    let isPaused = false;
+    let hasExceeded = false;
 
-        const timerElement = document.getElementById('timer');
-        const bodyElement = document.body;
-        const beepSound = new Audio('beep.mp3');
+    const timerElement = document.getElementById('timer');
+    const messageElement = document.getElementById('message');
+    const bodyElement = document.body;
+    const beepSound = new Audio('beep.mp3');
 
-         function formatTime(time) {
-             return time < 10 ? '0' + time : time;
+    function formatTime(time) {
+      return Math.abs(time) < 10 ? '0' + Math.abs(time) : Math.abs(time);
+    }
+
+    function updateTimer() {
+      if (!isPaused) {
+        const h = Math.floor(Math.abs(totalSeconds) / 3600);
+        const m = Math.floor((Math.abs(totalSeconds) % 3600) / 60);
+        const s = Math.abs(totalSeconds) % 60;
+
+        const prefix = totalSeconds < 0 ? '-' : '';
+        timerElement.textContent = `${prefix}${formatTime(h)}:${formatTime(m)}:${formatTime(s)}`;
+
+        // Colores de fondo según el estado del temporizador
+        if (totalSeconds > 60) {
+          bodyElement.style.backgroundColor = 'rgba(0, 255, 0, 0.6)';
+          messageElement.textContent = '';
+        } else if (totalSeconds <= 60 && totalSeconds > 0) {
+          bodyElement.style.backgroundColor = 'rgba(255, 52, 52, 1)';
+          messageElement.textContent = '';
+        } else if (totalSeconds < 0) {
+          bodyElement.style.backgroundColor = 'rgba(128, 128, 128, 0.3)';
+          if (!hasExceeded) {
+            messageElement.textContent = '¡Tiempo excedido!';
+            hasExceeded = true;
+          }
         }
 
-        function updateTimer() {
-            const h = Math.floor(totalSeconds / 3600);
-            const m = Math.floor((totalSeconds % 3600) / 60);
-            const s = totalSeconds % 60;
+        // Reproduce sonido si faltan 10 segundos
+        if (totalSeconds <= 3 && totalSeconds > 0) {
+          beepSound.play();
+        }
 
-             timerElement.textContent = `${formatTime(h)}:${formatTime(m)}:${formatTime(s)}`;
+        totalSeconds--;
+      }
+    }
 
-             if (totalSeconds <= 60 && totalSeconds > 0) {
-                 bodyElement.style.backgroundColor = 'rgba(255, 52, 52, 1)';
-             } else if (totalSeconds > 60) {
-                 bodyElement.style.backgroundColor = 'rgba(0, 255, 0, 0.6)';
-             }
+    let countdown = setInterval(updateTimer, 1000);
 
-             if (totalSeconds <= 10 && totalSeconds > 0) {
-                 beepSound.play();
-             }
+    document.addEventListener('keydown', function(event) {
+      if (event.key === ' ') {
+        event.preventDefault();
+        isPaused = !isPaused;
+      }
 
-             if (totalSeconds <= 0) {
-                 clearInterval(countdown);
-                 alert('¡El tiempo ha terminado!');
-             } else {
-                totalSeconds--;
-             }
-         }
-
-         countdown = setInterval(updateTimer, 1000);
-
-         document.addEventListener('keydown', function(event) {
-  if (event.key === 'Escape') {
-    window.history.back();
-  }
-});
-
-    </script>
+      if (event.key === 'Escape') {
+        window.history.back();
+      }
+    });
+  </script>
 
 </body>
 </html>
